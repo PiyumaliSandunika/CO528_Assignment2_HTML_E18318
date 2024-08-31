@@ -115,11 +115,12 @@
         const radioButtons = document.getElementsByName('angle');
 
         function updateAngle(value) {
-            angleInput.value = value;
+            const normalizedValue = ((value % 360) + 360) % 360;
+            angleInput.value = normalizedValue;
             radioButtons.forEach(radio => {
-                radio.checked = radio.value == value;
+                radio.checked = radio.value == normalizedValue;
             });
-            updateKnobPosition(value);
+            updateKnobPosition(normalizedValue);
         }
 
         function updateKnobPosition(angle) {
