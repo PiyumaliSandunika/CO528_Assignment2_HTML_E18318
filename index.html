@@ -115,13 +115,16 @@
         const radioButtons = document.getElementsByName('angle');
 
         function updateAngle(value) {
-            const modValue = value % 360;
-            angleInput.value = modValue;
-            radioButtons.forEach(radio => {
-                radio.checked = radio.value == modValue;
-            });
-            updateKnobPosition(modValue);
-        }
+        const normalizeAngle = (angle) => {
+            return (angle % 360 + 360) % 360;
+        };
+        const modValue = normalizeAngle(value);
+        angleInput.value = modValue;
+        radioButtons.forEach(radio => {
+            radio.checked = parseInt(radio.value) === modValue;
+        });
+        updateKnobPosition(modValue);
+    }
 
         function updateKnobPosition(angle) {
             const radius = circularSlider.offsetWidth / 2 - 10; // Adjust for knob size
