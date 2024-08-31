@@ -115,12 +115,12 @@
         const radioButtons = document.getElementsByName('angle');
 
         function updateAngle(value) {
-            const normalizedValue = ((value % 360) + 360) % 360;
-            angleInput.value = normalizedValue;
+            const modValue = value % 360;
+            angleInput.value = modValue;
             radioButtons.forEach(radio => {
-                radio.checked = radio.value == normalizedValue;
+                radio.checked = radio.value == modValue;
             });
-            updateKnobPosition(normalizedValue);
+            updateKnobPosition(modValue);
         }
 
         function updateKnobPosition(angle) {
@@ -134,9 +134,8 @@
 
         angleInput.addEventListener('input', (e) => {
             let value = parseInt(e.target.value);
-            if (isNaN(value) || value < 0) value = 0;
-            if (value > 360) value = 360;
-            updateAngle(value);
+            if (isNaN(value)) value = 0;
+            updateAngle(value);;
         });
 
         circularSlider.addEventListener('mousedown', startDrag);
