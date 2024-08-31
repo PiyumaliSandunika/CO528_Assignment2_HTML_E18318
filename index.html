@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angle Selector</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+            position: relative;
+        }
+        .input-group {
+            margin-bottom: 60px;
+        }
+        label {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        input[type="number"] {
+            font-size: 18px;
+            padding: 5px;
+            width: 80px;
+            text-align: center;
+        }
+        .circular-slider {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 10px solid #ccc;
+            position: relative;
+            margin: 0 auto 60px auto;
+        }
+        .circular-slider .knob {
+            width: 20px;
+            height: 20px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+        .label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .radio-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 60px; 
+        }
+        .radio-buttons input[type="radio"] {
+            transform: scale(1.2);
+        }
+        .radio-buttons label {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Angle Selector</h1>
+        <div class="input-group">
+            <label for="angleInput">Angle: </label>
+            <input type="number" id="angleInput" value="0" min="0" max="360">
+        </div>
+        <div class="input-group">
+            <div class="circular-slider" id="circularSlider">
+                <div class="knob" id="knob"></div>
+                <div class="dot" style="top: -3%; left: 50%;"></div>
+                <div class="label" style="top: -20px; left: 50%;">0</div>
+                <div class="dot" style="top: 103%; left: 50%;"></div>
+                <div class="label" style="top: 112%; left: 50%;">180</div>
+            </div>
+        </div>
+        <div class="input-group radio-buttons">
+            <label><input type="radio" name="angle" value="0" id="angle0">0</label>
+            <label><input type="radio" name="angle" value="45" id="angle45">45</label>
+            <label><input type="radio" name="angle" value="60" id="angle60">60</label>
+            <label><input type="radio" name="angle" value="90" id="angle90">90</label>
+            <label><input type="radio" name="angle" value="180" id="angle180">180</label>
+        </div>
+    </div>
+
+    <script>
+        const angleInput = document.getElementById('angleInput');
+        const circularSlider = document.getElementById('circularSlider');
+        const knob = document.getElementById('knob');
+        const radioButtons = document.getElementsByName('angle');
+
+        function updateAngle(value) {
+            angleInput.value = value;
+            radioButtons.forEach(radio => {
+                radio.checked = radio.value == value;
+            });
+            updateKnobPosition(value);
+        }
+
+        function updateKnobPosition(angle) {
+            const radius = circularSlider.offsetWidth / 2 - 10; // Adjust for knob size
+            const radians = (angle - 90) * (Math.PI / 180); // Offset by 90 degrees to start at the top
+            const x = radius + radius * Math.cos(radians);
+            const y = radius + radius * Math.sin(radians);
+            knob.style.left = `${x}px`;
+            knob.style.top = `${y}px`;
+        }
+
+        angleInput.addEventListener('input', (e) => {
+            let value = parseInt(e.target.value);
+            if (isNaN(value) || value < 0) value = 0;
+            if (value > 360) value = 360;
+            updateAngle(value);
+        });
+
+        circularSlider.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
+
+        let isDragging = false;
+
+        function startDrag(e) {
+            isDragging = true;
+            drag(e);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            const rect = circularSlider.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            const angle = (Math.atan2(y, x) * (180 / Math.PI) + 90 + 360) % 360;
+            updateAngle(Math.round(angle));
+        }
+
+        function endDrag() {
+            isDragging = false;
+        }
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                updateAngle(e.target.value);
+            });
+        });
+        updateAngle(0);
+    </script>
+</body>
+</html>
